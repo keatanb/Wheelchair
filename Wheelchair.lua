@@ -577,24 +577,15 @@ end
 local function markNormalBags()
 	for containerNumber = 0, 4 do
 		local container = _G["ContainerFrame" .. containerNumber + 1]
-		if (container:IsShown()) then
+
 			local bagsSlotCount = GetContainerNumSlots(containerNumber)
 			for slotNumber = 1, bagsSlotCount do
-				-- It appears there are two ways of finding items!
-				--   Accessing via _G means that bagNumbers are 1-based indices and
-				--   slot numbers start from the bottom-right rather than top-left!
-				-- Additionally, as only a couple of the bags may be visible at any
-				--   given time, we may be looking at items whose buttons don't
-				--   currently exist, and mark the wrong ones, so get the actual
-				--   bag & slot number from the itemButton.
-
 				local itemButton = _G["ContainerFrame" .. containerNumber + 1 .. "Item" .. bagsSlotCount - slotNumber + 1]
-
 				local bagNumber = itemButton:GetParent():GetID()
 				local actualSlotNumber = itemButton:GetID()
 				checkItem(bagNumber, actualSlotNumber, itemButton)
 			end
-		end
+
 	end
 end
 
@@ -673,6 +664,10 @@ local function setupDefaults()
 	if AutoSellGreyItems == nil then
 		AutoSellGreyItems = true
 	end
+
+	if AutoDropItemsToSell == nil then
+		AutoDropItemsToSell = true
+	end
 end
 
 local function setFreeBagSpace()
@@ -690,25 +685,24 @@ local function handleEvent(self, event, addonName)
 	if event == "ADDON_LOADED" and addonName == "Wheelchair" then
 		wheelchair:UnregisterEvent("ADDON_LOADED")
 
-		print("Wheelchair Mode Looter Loaded")
+		print("Wheelchair Mode Looting Loaded [v1.0]")
 
 		setupDefaults()
 
 		setFreeBagSpace()
-
+		markWares()
 		countLimit = 400
 		wheelchair:SetScript("OnUpdate", onUpdate)
 
 		if IsAddOnLoaded("Baggins") then
 			Baggins:RegisterSignal("Baggins_BagOpened", handleBagginsOpened, Baggins)
 		end
+
 	elseif event == "PLAYER_ENTERING_WORLD" then
 		wheelchair:RegisterEvent("BAG_UPDATE_DELAYED")
 	elseif event == "BAG_UPDATE_DELAYED" then
 		setFreeBagSpace()
-		if markCounter == 0 then
-			wheelchair:SetScript("OnUpdate", onUpdate)
-		end
+		markWares()
 	elseif event == "MERCHANT_SHOW" then
 		peddleGoods()
 	elseif event == "LOOT_OPENED" then

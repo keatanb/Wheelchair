@@ -66,7 +66,7 @@ end
 function frame:CreateOptions()
 	local title = self:CreateFontString(nil, nil, "GameFontNormalLarge")
 	title:SetPoint("TOPLEFT", 16, -16)
-	title:SetText("Wheelchair v5.0")
+	title:SetText("Wheelchair v1.0")
 
 	local sellLimit = createCheckBox(self, title, 1, SellLimit, "Sell Limit", "Limits the amount of items sold in one go, so you may buy all items back.")
 	sellLimit:SetScript("PostClick", function(self, button, down)
@@ -84,10 +84,11 @@ function frame:CreateOptions()
 	end)
 	silenceSaleSummary:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 190, 2 * -26)
 
-	local autoDrop = createCheckBox(self, title, 3, AutoDropItemsToSell, "AutoDrop", "Drop lowest value stack to pick up more valuable item on full inventory.")
+	local autoDrop = createCheckBox(self, title, 15, AutoDropItemsToSell, "AutoDrop", "Drop lowest value stack to pick up more valuable item on full inventory.")
 	autoDrop:SetScript("PostClick", function(self, button, down)
 		AutoDropItemsToSell = self:GetChecked()
 	end)
+	autoDrop:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 190, -26)
 
 	local modifierKeyLabel = self:CreateFontString(nil, nil, "GameFontNormal")
 	modifierKeyLabel:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 16, -90)
