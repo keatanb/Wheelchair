@@ -2,9 +2,7 @@ local _, ns = ...
 
 -- Assign global functions to locals for optimisation.
 local GetContainerNumSlots = GetContainerNumSlots
-local GetContainerItemID = GetContainerItemID
 local GetItemInfo = GetItemInfo
-local GetItemCount = GetItemCount
 local GetContainerItemInfo = GetContainerItemInfo
 local GetQuestLogItemLink = GetQuestLogItemLink
 local PickupContainerItem = PickupContainerItem
@@ -13,7 +11,6 @@ local IsControlKeyDown = IsControlKeyDown
 local IsShiftKeyDown = IsShiftKeyDown
 local IsAltKeyDown = IsAltKeyDown
 local UnitClass = UnitClass
-local next = next
 local Baggins = Baggins
 
 local ARMOUR = ns.ARMOUR
@@ -118,7 +115,7 @@ local function isUnwantedItem(itemType, subType, equipSlot)
 	local isCloak = equipSlot == 'INVTYPE_CLOAK'
 	if AutoSellUnwantedItems and (itemType == WEAPON or itemType == ARMOUR) and not isCloak then
 		unwantedItem = true
-		for key, value in pairs(WANTED_ITEMS[PLAYERS_CLASS][itemType]) do
+		for _, value in pairs(WANTED_ITEMS[PLAYERS_CLASS][itemType]) do
 			if subType == value then
 				unwantedItem = false
 				break
@@ -130,7 +127,7 @@ local function isUnwantedItem(itemType, subType, equipSlot)
 end
 
 local function itemIsToBeSold(itemID, uniqueItemID)
-	local _, link, quality, itemLevel, _, itemType, subType, _, equipSlot, _, price = GetItemInfo(itemID)
+	local _, link, quality, _, _, itemType, subType, _, equipSlot, _, price = GetItemInfo(itemID)
 
 	-- No price?  No sale!
 	if not price or price <= 0 then
@@ -151,8 +148,7 @@ local function itemIsToBeSold(itemID, uniqueItemID)
 
 	if autoSellable then
 		if SoulboundOnly and not unwantedGrey then
-			local isSoulbound = isSoulbound(link)
-			autoSellable = isSoulbound
+			autoSellable = isSoulbound(link)
 		end
 	end
 
@@ -161,19 +157,14 @@ end
 
 
 local function getMostGarbageMarkedItem()
-	local lastPrice = nil
-	local bagNum = nil
-	local slotNum = nil
-	local weakestLink = nil
+	local lastPrice, bagNum, slotNum, weakestLink
 	for bag = 0, NUM_BAG_SLOTS do
 		for bagSlot = 1, GetContainerNumSlots(bag) do
 			local link = GetContainerItemLink(bag, bagSlot)
 			if link then
 				local itemID, uniqueItemID = parseItemString(link)
 
-				local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount,
-				itemEquipLoc, itemIcon, vendorPrice, itemClassID, itemSubClassID, bindType, expacID, itemSetID,
-				isCraftingReagent = GetItemInfo(link)
+				local _, _, _, _, _, _, _, _,_, _, vendorPrice, _, _, _, _, _,_ = GetItemInfo(link)
 				if uniqueItemID and itemIsToBeSold(itemID, uniqueItemID) then
 					local _, itemCount = GetContainerItemInfo(bag, bagSlot)
 					local totalVendorPrice = vendorPrice * itemCount
@@ -261,7 +252,7 @@ local function peddleGoods()
 
 				local _, amount = GetContainerItemInfo(bagNumber, slotNumber)
 
-				local _, _, quality, _, _, _, _, _, _, _, price = GetItemInfo(itemID)
+				local _, _, _, _, _, _, _, _, _, _, price = GetItemInfo(itemID)
 				if price and price > 0 then
 					price = price * amount
 
@@ -372,9 +363,9 @@ local function checkItem(bagNumber, slotNumber, itemButton)
 end
 
 local function markBagginsBags()
-	for bagid, bag in ipairs(Baggins.bagframes) do
-		for sectionid, section in ipairs(bag.sections) do
-			for buttonid, itemButton in ipairs(section.items) do
+	for _, bag in ipairs(Baggins.bagframes) do
+		for _, section in ipairs(bag.sections) do
+			for _, itemButton in ipairs(section.items) do
 				local itemsBagNumber = itemButton:GetParent():GetID()
 				local itemsSlotNumber = itemButton:GetID()
 
@@ -575,9 +566,8 @@ end
 
 -- Also works for bBag.
 local function markNormalBags()
-	for containerNumber = 0, 4 do
-		local container = _G["ContainerFrame" .. containerNumber + 1]
-
+	for containerNumber = 0, NUM_BAG_SLOTS do
+		--local container = _G["ContainerFrame" .. containerNumber + 1]
 			local bagsSlotCount = GetContainerNumSlots(containerNumber)
 			for slotNumber = 1, bagsSlotCount do
 				local itemButton = _G["ContainerFrame" .. containerNumber + 1 .. "Item" .. bagsSlotCount - slotNumber + 1]
@@ -585,7 +575,6 @@ local function markNormalBags()
 				local actualSlotNumber = itemButton:GetID()
 				checkItem(bagNumber, actualSlotNumber, itemButton)
 			end
-
 	end
 end
 
@@ -677,18 +666,15 @@ local function setFreeBagSpace()
 	end
 	if FreeBagSpace <= 3 then
 		UIErrorsFrame:AddMessage("Wheelchair has "..FreeBagSpace.." slots left.",1,0,0,5)
-		PlaySoundFile("Sound/SPELLS/SPELL_Treasure_Goblin_Coin_Toss_09.OGG")
 	end
 end
 
-local function handleEvent(self, event, addonName)
+local function handleEvent(_, event, addonName)
 	if event == "ADDON_LOADED" and addonName == "Wheelchair" then
 		wheelchair:UnregisterEvent("ADDON_LOADED")
-
 		print("Wheelchair Mode Looting Loaded [v1.0]")
 
 		setupDefaults()
-
 		setFreeBagSpace()
 		markWares()
 		countLimit = 400
@@ -715,29 +701,7 @@ end
 wheelchair:SetScript("OnEvent", handleEvent)
 
 local function toggleItemPeddling(itemID, uniqueItemID)
-	local _, link, quality, _, _, itemType, subType, _, equipSlot, _, price = GetItemInfo(itemID)
-	if price == 0 then
-		return
-	end
-
-	local unwantedGrey = quality == 0 and AutoSellGreyItems
-	local unwantedWhite = quality == 1 and AutoSellWhiteItems
-	local unwantedGreen = quality == 2 and AutoSellGreenItems
-	local unwantedBlue = quality == 3 and AutoSellBlueItems
-	local unwantedPurple = quality == 4 and AutoSellPurpleItems
-
-	local unwantedItem = isUnwantedItem(itemType, subType, equipSlot)
-
-	local autoSellable = (unwantedGrey or unwantedWhite or unwantedGreen or unwantedBlue or unwantedPurple or unwantedItem)
-
-	if autoSellable then
-		if SoulboundOnly and not unwantedGrey then
-			local isSoulbound = isSoulbound(link)
-			autoSellable = isSoulbound
-		end
-	end
-
-	if autoSellable then
+	if itemIsToBeSold(itemID,uniqueItemID) then
 		if UnmarkedItems[uniqueItemID] then
 			UnmarkedItems[uniqueItemID] = nil
 		else
@@ -773,7 +737,6 @@ local function handleItemClick(self, button)
 	end
 
 	toggleItemPeddling(itemID, uniqueItemID)
-
 	markWares()
 end
 
@@ -803,15 +766,12 @@ local function checkQuestReward(itemButton, toggle)
 	testReward(GetQuestLogItemLink("choice", rewardIndex))
 end
 
-local function handleQuestFrameItemClick(self, button)
+local function handleQuestFrameItemClick(self, _)
 	local altKeyDown = IsAltKeyDown()
-
 	if not altKeyDown then
 		return
 	end
-
 	checkQuestReward(self, true)
-
 	markWares()
 end
 
