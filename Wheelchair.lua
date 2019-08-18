@@ -197,36 +197,38 @@ local function dropGarbage()
 				LootSlot(i)
 			end
 
-			for i = GetNumLootItems(), 1, -1 do
-				local _, _, lootQuantity, _, _, locked, isQuestItem, _, isActive = GetLootSlotInfo(i)
-				local link = GetLootSlotLink(i)
-				if link and not locked then
-					local weakestLink, lowestAmt, lowestBagNum, lowestSlotNum = getMostGarbageMarkedItem()
+            if GetNumLootItems() > FreeBagSpace then
+                for i = GetNumLootItems(), 1, -1 do
+                    local _, _, lootQuantity, _, _, locked, isQuestItem, _, isActive = GetLootSlotInfo(i)
+                    local link = GetLootSlotLink(i)
+                    if link and not locked then
+                        local weakestLink, lowestAmt, lowestBagNum, lowestSlotNum = getMostGarbageMarkedItem()
 
-					if weakestLink == nil then
-						print("*** Can't brick anything, deal with it")
-					else
-						if isQuestItem or isActive then
-							PickupContainerItem(lowestBagNum,lowestSlotNum)
-							DeleteCursorItem()
-							LootSlot(i)
-							print("--- "..weakestLink .. priceToGold(lowestAmt) .. " bricked")
-							print("+++ "..link .. " quest item slipped in")
-						else
-							local price = select(11, GetItemInfo(link)) * lootQuantity
-							if price > lowestAmt then
-								PickupContainerItem(lowestBagNum,lowestSlotNum)
-								DeleteCursorItem()
-								LootSlot(i)
-								print("--- " .. weakestLink .. priceToGold(lowestAmt) .. " bricked")
-								print("+++ " .. link .. priceToGold(price) .. " scavenged")
-							else
-								print("!!! nothing less valuable marked in the wheelchair keep rollin")
-							end
-						end
-					end
-				end
-			end
+                        if weakestLink == nil then
+                            print("*** Can't brick anything, deal with it")
+                        else
+                            if isQuestItem or isActive then
+                                PickupContainerItem(lowestBagNum,lowestSlotNum)
+                                DeleteCursorItem()
+                                LootSlot(i)
+                                print("--- "..weakestLink .. priceToGold(lowestAmt) .. " bricked")
+                                print("+++ "..link .. " quest item slipped in")
+                            else
+                                local price = select(11, GetItemInfo(link)) * lootQuantity
+                                if price > lowestAmt then
+                                    PickupContainerItem(lowestBagNum,lowestSlotNum)
+                                    DeleteCursorItem()
+                                    LootSlot(i)
+                                    print("--- " .. weakestLink .. priceToGold(lowestAmt) .. " bricked")
+                                    print("+++ " .. link .. priceToGold(price) .. " scavenged")
+                                else
+                                    print("!!! nothing less valuable marked in the wheelchair keep rollin")
+                                end
+                            end
+                        end
+                    end
+                end
+            end
 			tDelay = GetTime()
 		end
 	end
