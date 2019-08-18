@@ -198,9 +198,9 @@ local function dropGarbage()
 			end
 
 			for i = GetNumLootItems(), 1, -1 do
-				local _, _, lootQuantity, _, _, _, isQuestItem, _, isActive = GetLootSlotInfo(i)
+				local _, _, lootQuantity, _, _, locked, isQuestItem, _, isActive = GetLootSlotInfo(i)
 				local link = GetLootSlotLink(i)
-				if link then
+				if link and not locked then
 					local weakestLink, lowestAmt, lowestBagNum, lowestSlotNum = getMostGarbageMarkedItem()
 
 					if weakestLink == nil then
@@ -672,7 +672,7 @@ end
 local function handleEvent(_, event, addonName)
 	if event == "ADDON_LOADED" and addonName == "Wheelchair" then
 		wheelchair:UnregisterEvent("ADDON_LOADED")
-		print("Wheelchair Mode Looting Loaded [v1.0]")
+		print("Wheelchair |cff9966ff[Loot]|r Enabled")
 
 		setupDefaults()
 		setFreeBagSpace()
