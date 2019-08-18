@@ -2,7 +2,7 @@
 ## Title: Wheelchair |cff9966ff[Loot]
 ## Notes: Automatically sells designated inventory items, or destroys them for more valuable loot when bags are full
 ## Author: Keatan Bauer
-## URL: http://github.com
+## URL: https://github.com/keatanb/Wheelchair
 ## SavedVariables: ModifierKey, SellLimit, Silent, SilenceSaleSummary, IconPlacement
 ## SavedVariablesPerCharacter: ItemsToSell, UnmarkedItems, AutoSellGreyItems, AutoSellWhiteItems, AutoSellGreenItems, AutoSellBlueItems, AutoSellPurpleItems, AutoSellUnwantedItems, SoulboundOnly, AutoDropItemsToSell
 
