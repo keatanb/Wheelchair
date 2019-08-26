@@ -33,7 +33,7 @@ local _, PLAYERS_CLASS = UnitClass('player')
 --        PS: Baggins needs to also listen to the bags being opened!
 
 -- Turns an integer value into the format "Xg Ys Zc".
-local function priceToGold(price)
+function priceToGold(price)
 	local gold = price / 10000
 	local silver = (price % 10000) / 100
 	local copper = (price % 10000) % 100
@@ -82,7 +82,7 @@ local function isSoulbound(itemLink)
 end
 
 -- Serves to get the item's itemID + suffixID.
-local function parseItemString(itemString)
+function parseItemString(itemString)
 	if not itemString then
 		return
 	end
@@ -153,6 +153,36 @@ local function itemIsToBeSold(itemID, uniqueItemID)
 	end
 
 	return ItemsToSell[uniqueItemID] or autoSellable
+end
+
+
+function getMarkedAndCashValue()
+	local totalMarkedPrice = 0
+	local numItems = 0
+	local cash
+	for bag = 0, NUM_BAG_SLOTS do
+		for bagSlot = 1, GetContainerNumSlots(bag) do
+			local link = GetContainerItemLink(bag, bagSlot)
+			if link then
+				local itemID, uniqueItemID = parseItemString(link)
+
+				local _, _, _, _, _, _, _, _,_, _, vendorPrice, _, _, _, _, _,_ = GetItemInfo(link)
+				if uniqueItemID and itemIsToBeSold(itemID, uniqueItemID) then
+					local _, itemCount = GetContainerItemInfo(bag, bagSlot)
+					local totalVendorPrice = vendorPrice * itemCount
+					if totalMarkedPrice == nil then
+						totalMarkedPrice = totalVendorPrice
+						numItems = 1
+					else
+						totalMarkedPrice = totalMarkedPrice + totalVendorPrice
+						numItems = numItems + 1
+					end
+				end
+			end
+		end
+	end
+	cash = GetMoney()
+	return totalMarkedPrice, numItems, cash, priceToGold(totalMarkedPrice+cash)
 end
 
 
