@@ -175,8 +175,39 @@ end
 
 InterfaceOptions_AddCategory(frame)
 
+function getMarkedAndCashValue()
+	local totalMarkedPrice = 0
+	local numItems = 0
+	local cash
+	for bag = 0, NUM_BAG_SLOTS do
+		for bagSlot = 1, GetContainerNumSlots(bag) do
+			local link = GetContainerItemLink(bag, bagSlot)
+			if link then
+				local itemID, uniqueItemID = parseItemString(link)
+
+				local _, _, _, _, _, _, _, _,_, _, vendorPrice, _, _, _, _, _,_ = GetItemInfo(link)
+				if uniqueItemID and itemIsToBeSold(itemID, uniqueItemID) then
+					local _, itemCount = GetContainerItemInfo(bag, bagSlot)
+					local totalVendorPrice = vendorPrice * itemCount
+					if totalMarkedPrice == nil then
+						totalMarkedPrice = totalVendorPrice
+						numItems = 1
+					else
+						totalMarkedPrice = totalMarkedPrice + totalVendorPrice
+						numItems = numItems + 1
+					end
+				end
+			end
+		end
+	end
+	cash = GetMoney()
+	return totalMarkedPrice, numItems, cash, GetCoinText(totalMarkedPrice+cash)
+end
+
 -- Handling Wheelchair's options.
 SLASH_WHEELCHAIR_COMMAND1 = '/wheelchair'
+SLASH_WHEELCHAIR_COMMAND2 = '/wc'
 SlashCmdList['WHEELCHAIR_COMMAND'] = function(command)
-	InterfaceOptionsFrame_OpenToCategory('Wheelchair')
+	local totalMarkedPrice, numItems, cash, sumString
+	print(numItems .. ' marked items worth ' .. GetCoinText(totalMarkedPrice) .. '+'..getCoinText(cash) .. '=' .. getCoinText(sumString))
 end
