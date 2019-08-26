@@ -208,6 +208,6 @@ end
 SLASH_WHEELCHAIR_COMMAND1 = '/wheelchair'
 SLASH_WHEELCHAIR_COMMAND2 = '/wc'
 SlashCmdList['WHEELCHAIR_COMMAND'] = function(command)
-	local totalMarkedPrice, numItems, cash, sumString
+	local totalMarkedPrice, numItems, cash, sumString = getMarkedAndCashValue()
 	print(numItems .. ' marked items worth ' .. GetCoinText(totalMarkedPrice) .. '+'..getCoinText(cash) .. '=' .. getCoinText(sumString))
 end
