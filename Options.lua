@@ -1,7 +1,7 @@
 local _, ns = ...
 
 local frame = CreateFrame("Frame", nil, InterfaceOptionsFramePanelContainer)
-frame.name = "Wheelchair"
+frame.name = "WheelchairLoot"
 frame:Hide()
 
 frame:SetScript("OnShow", function(self)
@@ -78,18 +78,17 @@ function frame:CreateOptions()
 		Silent = self:GetChecked()
 	end)
 
-	local silenceBagAlert = createCheckBox(self, title, 2, Silent, "Silence Bag Alert", "Silence low bag slot alerter.")
-	silenceBagAlert:SetScript("PostClick", function(self, button, down)
-		SilentBag = self:GetChecked()
-	end)
-
-
-
 	local silenceSaleSummary = createCheckBox(self, title, 3, SilenceSaleSummary, "Silence Sale Summary", "Silence the sale summary.")
 	silenceSaleSummary:SetScript("PostClick", function(self, button, down)
 		SilenceSaleSummary = self:GetChecked()
 	end)
 	silenceSaleSummary:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 190, 2 * -26)
+
+	local silenceBagAlert = createCheckBox(self, title, 16, SilentBag, "Silence Bag Alert", "Silence low bag slot alerter.")
+	silenceBagAlert:SetScript("PostClick", function(self, button, down)
+		SilentBag = self:GetChecked()
+	end)
+	silenceBagAlert:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 340, -26)
 
 	local autoDrop = createCheckBox(self, title, 15, AutoDropItemsToSell, "AutoDrop", "Drop lowest value stack to pick up more valuable item on full inventory.")
 	autoDrop:SetScript("PostClick", function(self, button, down)

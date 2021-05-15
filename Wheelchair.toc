@@ -3,7 +3,7 @@
 ## Notes: Automatically sells designated inventory items, or destroys them for more valuable loot when bags are full
 ## Author: Keatan Bauer
 ## URL: https://github.com/keatanb/Wheelchair
-## SavedVariables: ModifierKey, SellLimit, Silent, SilenceSaleSummary, IconPlacement
+## SavedVariables: ModifierKey, SellLimit, Silent, SilenceSaleSummary, IconPlacement, SilentBag
 ## SavedVariablesPerCharacter: ItemsToSell, UnmarkedItems, AutoSellGreyItems, AutoSellWhiteItems, AutoSellGreenItems, AutoSellBlueItems, AutoSellPurpleItems, AutoSellUnwantedItems, SoulboundOnly, AutoDropItemsToSell
 
 vo\WantedItems.lua
