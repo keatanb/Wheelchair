@@ -66,7 +66,7 @@ end
 function frame:CreateOptions()
 	local title = self:CreateFontString(nil, nil, "GameFontNormalLarge")
 	title:SetPoint("TOPLEFT", 16, -16)
-	title:SetText("Wheelchair v1.0")
+	title:SetText("Wheelchair Loot")
 
 	local sellLimit = createCheckBox(self, title, 1, SellLimit, "Sell Limit", "Limits the amount of items sold in one go, so you may buy all items back.")
 	sellLimit:SetScript("PostClick", function(self, button, down)
@@ -77,6 +77,13 @@ function frame:CreateOptions()
 	silentMode:SetScript("PostClick", function(self, button, down)
 		Silent = self:GetChecked()
 	end)
+
+	local silenceBagAlert = createCheckBox(self, title, 2, Silent, "Silence Bag Alert", "Silence low bag slot alerter.")
+	silenceBagAlert:SetScript("PostClick", function(self, button, down)
+		SilentBag = self:GetChecked()
+	end)
+
+
 
 	local silenceSaleSummary = createCheckBox(self, title, 3, SilenceSaleSummary, "Silence Sale Summary", "Silence the sale summary.")
 	silenceSaleSummary:SetScript("PostClick", function(self, button, down)

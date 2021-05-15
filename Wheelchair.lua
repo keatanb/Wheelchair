@@ -251,8 +251,6 @@ local function dropGarbage()
                                     LootSlot(i)
                                     print("--- " .. weakestLink .. priceToGold(lowestAmt) .. " bricked")
                                     print("+++ " .. link .. priceToGold(price) .. " scavenged")
-                                else
-                                    print("!!! nothing less valuable marked in the wheelchair keep rollin")
                                 end
                             end
                         end
@@ -696,7 +694,7 @@ local function setFreeBagSpace()
 	for i=0,NUM_BAG_SLOTS do
 		FreeBagSpace = FreeBagSpace + GetContainerNumFreeSlots(i)
 	end
-	if FreeBagSpace <= 3 then
+	if FreeBagSpace <= 3 and not SilentBag then
 		UIErrorsFrame:AddMessage("Wheelchair has "..FreeBagSpace.." slots left.",1,0,0,5)
 	end
 end
